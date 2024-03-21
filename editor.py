@@ -6,11 +6,35 @@ from scripts.enteties import PhysicsEntity, Player
 from scripts.utils import load_image, load_images, Animation
 from scripts.tilemap import Tilemap
 
-RENDER_SCALE = 2.0
+RENDER_SCALE = 2.0 
 
 
 class Editor:
+    """
+    A level editor for creating and modifying game levels.
+
+    This editor allows for placing, moving, and removing various game assets on a grid to design custom levels. It includes basic functionality for level manipulation and saving.
+
+    Attributes:
+        running (bool): Whether the editor is running.
+        display (pygame.Surface): The main surface where the level is drawn.
+        screen (pygame.Surface): The window on which the display surface is scaled and drawn.
+        clock (pygame.Clock): A clock to control the frame rate of the editor.
+        tilemap (Tilemap): The tilemap being edited.
+        assets (dict): A dictionary of game assets available for use in the level.
+        movement (list): A list indicating which directions the camera is moving.
+        scroll (list): The current x and y offsets of the camera.
+        tile_list (list): A list of the keys in the assets dictionary for easy access.
+        tile_group (int): The index of the currently selected asset group.
+        tile_variant (int): The index of the currently selected asset within the group (unused).
+        clicking (bool): Whether the left mouse button is currently held down.
+        right_clicking (bool): Whether the right mouse button is currently held down.
+        shift (bool): Whether the shift key is currently held down (unused).
+        ongrid (bool): Whether new assets should snap to the grid when placed.
+        mpos (list): The current position of the mouse cursor.
+    """
     def __init__(self) -> None:
+        """Initializes the editor, setting up the Pygame window, loading assets, and preparing for user input."""
         # Initialize the editor, setting up the window and loading assets
         pg.init()
         pg.display.set_caption("editor")
@@ -63,6 +87,7 @@ class Editor:
         self.mpos = [0, 0]
 
     def handle_events(self):
+        """Handles user input from the mouse and keyboard to manipulate the level and navigate the editor."""
         # Process input events to control the editor and modify the level
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -119,6 +144,12 @@ class Editor:
                     self.movement[3] = False
 
     def adjust_cam(self):
+        """
+        Adjusts the camera's position based on user input. This allows the user to move the view around the level.
+        
+        Returns:
+            tuple: The new camera scroll position as (x, y).
+        """
         # Adjust the camera based on player movement (not used in the editor context)
         self.scroll[0] += (self.player.rect().centerx -
                            self.display.get_width() / 2 - self.scroll[0]) / 30
@@ -127,6 +158,9 @@ class Editor:
         return (int(self.scroll[0]), int(self.scroll[1]))
 
     def run(self):
+        """
+        The main loop of the editor. Handles events, updates the state, and renders the editor and level to the screen.
+        """
         # Main loop for running the editor
         while self.running:
             self.display.fill((0, 0, 0))  # Clear the display each frame
@@ -183,4 +217,5 @@ class Editor:
 
 
 # Create and run the editor instance
-Editor().run()
+if __name__ == "__main__":
+    Editor().run()
