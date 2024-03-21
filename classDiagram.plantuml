@@ -1,0 +1,133 @@
+@startuml Mario class diagram
+!pragma layout smetana
+
+class Game {
+    -player: Player
+    -clouds: Clouds
+    -tilemap: Tilemap
+    -harmfull_mobs: list[PhysicsEntity]
+    -harmless_mobs: list[PhysicsEntity]
+    +__init__(): None
+    +run(): void
+}
+
+abstract class PhysicsEntity {
+    -game
+    -type: string
+    -pos: list
+    -size: list
+    -velocity: list
+    -can_colide: boolean
+    -mob_types: list
+    -recovering_blink: int
+    -action: string
+    -anim_offset: tuple
+    -flip: boolean
+    +__init__(game, e_type, pos, size): None
+    +set_action(action): void
+    +rect(): Rect
+    +update(tilemap, movement=(0,0)): void
+    +render(surf, offset=(0,0)): void
+}
+
+class Player {
+    -air_time: int
+    -size_state: string
+    -recovering: int
+    -jump_count: int
+    +__init__(game, pos, size): None
+    +update(tilemap, movement=(0,0)): void
+    +check_mob_collision(direction): void
+    +sizeup(): void
+    +sizedown(): void
+}
+
+class Sizeup {
+    -start_pos: list
+    -direction: string or int
+    -id: int
+    +__init__(game, pos, size, direction="random"): None
+    +update(tilemap, movement=(0,0)): void
+}
+
+class Goomba {
+    -id: int
+    -direction: string or int
+    +__init__(game, pos, size): None
+    +update(tilemap, movement=(0,0)): void
+    +check_player_collision(direction): void
+}
+
+class Koopa {
+    -id: int
+    -direction: string or int
+    +__init__(game, pos, size): None
+    +update(tilemap, movement=(0,0)): void
+    +check_player_collision(direction): void
+    +shell(): void
+}
+
+class Shell {
+    -id: int
+    -direction: int
+    +__init__(game, pos, size): None
+    +update(tilemap, movement=(0,0)): void
+    +check_player_collision(direction): void
+}
+
+class Randoms {
+    -reward: string
+    -game
+    -pos: string
+    -activ: boolean
+    {static} -all_randoms: dictionary
+    +__init__(game, pos, reward="random"): None
+    +activate(pos): void
+}
+
+class Tilemap {
+    -tile_size: int
+    -tilemap: dictionary
+    -game: Game
+    -offgrid_tiles: list
+    -randoms: list
+    -initial_render: boolean
+    +__init__(game, tile_size=16): None
+    +tiles_around(pos): list
+    +save(path): void
+    +load(path): void
+    +physics_rects_around(pos): list
+    +render(surf, offset=(0,0)): void
+    {abstract} +abstractMethod(): void
+}
+
+class Animation {
+    -images: list
+    -loop: boolean
+    -img_duration: int
+    -done: boolean
+    -frame: int
+    +__init__(images, img_dur=5, loop=True): None
+    +copy(): Animation
+    +update(): void
+    +img(): image
+}
+
+
+Player --|> PhysicsEntity
+Sizeup --|> PhysicsEntity
+Goomba --|> PhysicsEntity
+Koopa --|> PhysicsEntity
+Shell --|> PhysicsEntity
+
+Player --* Game
+Sizeup --* Randoms
+Goomba --* Game
+Koopa --* Game
+Shell --* Koopa
+Randoms --* Game
+Tilemap --* Game
+
+Animation --* Game
+
+@enduml
